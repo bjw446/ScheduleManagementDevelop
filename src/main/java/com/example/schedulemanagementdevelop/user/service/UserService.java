@@ -18,7 +18,7 @@ public class UserService {
 
     @Transactional
     public CreateUserResponse saveUser(CreateUserRequest request) {
-        User user = new User(request.getName(), request.getEmail());
+        User user = new User(request.getName(), request.getEmail(), request.getPassword());
 
         User savedUser = userRepository.save(user);
         return new CreateUserResponse(
@@ -63,21 +63,28 @@ public class UserService {
         );
     }
 
-    public @Nullable UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
+    @Transactional
+    public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("없는 유저 입니다.")
         );
 
-        user.update(request.getName(), request.getEmail());
-        return new UpdateUserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                user.getModifiedAt()
-        );
+        user.update(request.getName(), request.getEmail(), request.getPassword());
+        if (!request.getPassword().equals(user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+        } else {
+            return new UpdateUserResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getCreatedAt(),
+                    user.getModifiedAt()
+            );
+        }
+
     }
 
+    @Transactional
     public void deleteUser(Long userId) {
         boolean existence = userRepository.existsById(userId);
 
