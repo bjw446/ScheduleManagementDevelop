@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class RegisterUserRequest {
+    @NotBlank(message = "이름은 공란일 수 없습니다.")
     private String name;
 
     @NotBlank(message = "이메일은 공란일 수 없습니다.")

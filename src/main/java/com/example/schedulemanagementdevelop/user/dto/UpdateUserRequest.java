@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class UpdateUserRequest {
+    @NotBlank(message = "이메일은 공란일 수 없습니다.")
     private String name;
 
     @NotBlank(message = "비밀번호는 필수 입력 사항입니다.")

@@ -20,7 +20,7 @@ public class ScheduleService {
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
         User user = userRepository.findById(request.getUserId()).orElseThrow(
-                () -> new IllegalArgumentException("없는 작성자 입니다.")
+                () -> new IllegalArgumentException("없는 유저 입니다.")
         );
 
         Schedule schedule = new Schedule(
@@ -50,8 +50,6 @@ public class ScheduleService {
                     schedule.getId(),
                     schedule.getScheduleTitle(),
                     schedule.getScheduleContent(),
-                    schedule.getUser().getId(),
-                    schedule.getCreatedAt(),
                     schedule.getModifiedAt()
             );
             dtos.add(dto);
@@ -69,8 +67,6 @@ public class ScheduleService {
                 schedule.getId(),
                 schedule.getScheduleTitle(),
                 schedule.getScheduleContent(),
-                schedule.getUser().getId(),
-                schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
     }
@@ -86,8 +82,6 @@ public class ScheduleService {
                 schedule.getId(),
                 schedule.getScheduleTitle(),
                 schedule.getScheduleContent(),
-                schedule.getUser().getId(),
-                schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
     }

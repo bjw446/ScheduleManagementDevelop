@@ -6,7 +6,6 @@ import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,6 +113,4 @@ public class UserService {
         }
         userRepository.deleteById(userId);
     }
-
-
 }
