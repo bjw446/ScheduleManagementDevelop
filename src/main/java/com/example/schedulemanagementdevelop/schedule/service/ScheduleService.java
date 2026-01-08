@@ -1,5 +1,8 @@
 package com.example.schedulemanagementdevelop.schedule.service;
 
+import com.example.schedulemanagementdevelop.comment.dto.GetCommentResponse;
+import com.example.schedulemanagementdevelop.comment.entity.Comment;
+import com.example.schedulemanagementdevelop.comment.repository.CommentRepository;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.entity.Schedule;
 import com.example.schedulemanagementdevelop.schedule.repository.ScheduleRepository;
@@ -16,6 +19,7 @@ import java.util.List;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
@@ -27,7 +31,7 @@ public class ScheduleService {
                 request.getScheduleTitle(),
                 request.getScheduleContent(),
                 user
-                );
+        );
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
         return new CreateScheduleResponse(
@@ -58,16 +62,29 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetScheduleResponse findOneSchedule(Long scheduleId) {
+    public GetScheduleAndCommentResponse findOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("없는 일정 입니다.")
         );
-
-        return new GetScheduleResponse(
+        List<Comment> comments = commentRepository.findAllByScheduleId(scheduleId);
+        List<GetCommentResponse> dtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            GetCommentResponse dto = new GetCommentResponse(
+                    comment.getId(),
+                    comment.getContent(),
+                    comment.getCreatedAt(),
+                    comment.getModifiedAt(),
+                    comment.getSchedule().getUser().getId(),
+                    comment.getSchedule().getId()
+            );
+            dtos.add(dto);
+        }
+        return new GetScheduleAndCommentResponse(
                 schedule.getId(),
                 schedule.getScheduleTitle(),
                 schedule.getScheduleContent(),
-                schedule.getModifiedAt()
+                schedule.getModifiedAt(),
+                dtos
         );
     }
 

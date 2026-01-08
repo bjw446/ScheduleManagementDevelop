@@ -33,7 +33,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<GetScheduleResponse> getOneSchedule(@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long scheduleId) {
+    public ResponseEntity<GetScheduleAndCommentResponse> getOneSchedule(@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long scheduleId) {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
         }
