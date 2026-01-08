@@ -1,5 +1,6 @@
 package com.example.schedulemanagementdevelop.user.service;
 
+import com.example.schedulemanagementdevelop.config.PasswordEncoder;
 import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
@@ -13,17 +14,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
         }
-
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = new User(
                 request.getName(),
                 request.getEmail(),
-                request.getPassword()
+                encodedPassword
         );
         User savedUser = userRepository.save(user);
         return new RegisterUserResponse(
@@ -41,7 +43,7 @@ public class UserService {
                 () -> new IllegalArgumentException("이메일이 일치하지 않습니다.")
         );
 
-        if (!request.getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -91,10 +93,10 @@ public class UserService {
                 () -> new IllegalArgumentException("없는 유저 입니다.")
         );
 
-        if (!request.getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
         }
-        user.update(request.getName(), request.getPassword());
+        user.update(request.getName());
         return new UpdateUserResponse(
                 user.getId(),
                 user.getName(),
