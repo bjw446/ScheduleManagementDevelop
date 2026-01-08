@@ -1,7 +1,6 @@
 package com.example.schedulemanagementdevelop.user.controller;
 
 import com.example.schedulemanagementdevelop.user.dto.*;
-import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -53,7 +52,7 @@ public class UserController {
     @PutMapping("/users")
     public ResponseEntity<UpdateUserResponse> updateUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @RequestBody UpdateUserRequest request) {
         if (sessionUser == null) {
-            throw new IllegalArgumentException("로그인이 필요한 서비스 입니다.");
+            throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(sessionUser.getId(), request));
     }
