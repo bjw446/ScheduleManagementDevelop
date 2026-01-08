@@ -4,7 +4,6 @@ import com.example.schedulemanagementdevelop.user.dto.*;
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,16 +16,40 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateUserResponse saveUser(CreateUserRequest request) {
-        User user = new User(request.getName(), request.getEmail(), request.getPassword());
+    public RegisterUserResponse registerUser(RegisterUserRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
+        }
 
+        User user = new User(
+                request.getName(),
+                request.getEmail(),
+                request.getPassword()
+        );
         User savedUser = userRepository.save(user);
-        return new CreateUserResponse(
+        return new RegisterUserResponse(
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getName(),
                 savedUser.getCreatedAt(),
                 savedUser.getModifiedAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public SessionUser login(LoginUserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("이메일이 일치하지 않습니다.")
+        );
+
+        if (!request.getPassword().equals(user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return new SessionUser(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
         );
     }
 
@@ -69,19 +92,17 @@ public class UserService {
                 () -> new IllegalArgumentException("없는 유저 입니다.")
         );
 
-        user.update(request.getName(), request.getEmail(), request.getPassword());
         if (!request.getPassword().equals(user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-        } else {
-            return new UpdateUserResponse(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getCreatedAt(),
-                    user.getModifiedAt()
-            );
         }
-
+        user.update(request.getName(), request.getPassword());
+        return new UpdateUserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCreatedAt(),
+                user.getModifiedAt()
+        );
     }
 
     @Transactional
@@ -93,4 +114,6 @@ public class UserService {
         }
         userRepository.deleteById(userId);
     }
+
+
 }
