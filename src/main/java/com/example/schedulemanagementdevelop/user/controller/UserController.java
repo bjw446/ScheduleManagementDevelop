@@ -1,7 +1,9 @@
 package com.example.schedulemanagementdevelop.user.controller;
 
 import com.example.schedulemanagementdevelop.user.dto.*;
+import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,27 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/users")
-    public ResponseEntity<CreateUserResponse> createUser (@Valid @RequestBody CreateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(request));
+    @PostMapping("/register")
+    public ResponseEntity<RegisterUserResponse> registerUser (@Valid @RequestBody RegisterUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginUserResponse> login (@Valid @RequestBody LoginUserRequest request, HttpSession session) {
+        SessionUser sessionUser = userService.login(request);
+        session.setAttribute("loginUser", sessionUser);
+
+        LoginUserResponse response = new LoginUserResponse(sessionUser.getId(), sessionUser.getName(), sessionUser.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout (@SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, HttpSession session) {
+        if (sessionUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/users")
@@ -30,9 +50,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findOneUser(userId));
     }
 
-    @PutMapping("/users/{userId}")
-    public ResponseEntity<UpdateUserResponse> updateUser (@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, request));
+    @PutMapping("/users")
+    public ResponseEntity<UpdateUserResponse> updateUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @RequestBody UpdateUserRequest request) {
+        if (sessionUser == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스 입니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(sessionUser.getId(), request));
     }
 
     @DeleteMapping("/users/{userId}")
