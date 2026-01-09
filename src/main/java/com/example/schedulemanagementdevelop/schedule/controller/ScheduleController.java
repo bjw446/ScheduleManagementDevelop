@@ -36,7 +36,10 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules/page")
-    public ResponseEntity<Page<GetPageResponse>> getAllSchedulePage (@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<Page<GetPageResponse>> getAllSchedulePage (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PageableDefault(size = 10) Pageable pageable) {
+        if (sessionUser == null) {
+            throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findAllSchedulePage(pageable));
     }
 

@@ -78,6 +78,14 @@ public class CommentService {
 
     @Transactional
     public UpdateCommentResponse updateComment(Long commentId, UpdateCommentRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("없는 유저 입니다.")
+        );
+
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow(
+                () -> new IllegalArgumentException("없는 일정 입니다.")
+        );
+
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("없는 댓글 입니다.")
         );

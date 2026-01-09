@@ -113,6 +113,8 @@ public class ScheduleService {
         if (!existence) {
             throw new IllegalArgumentException("없는 일정 입니다.");
         }
+
+        commentRepository.deleteAllByScheduleId(scheduleId);
         scheduleRepository.deleteById(scheduleId);
     }
 

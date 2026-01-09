@@ -30,8 +30,8 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return new RegisterUserResponse(
                 savedUser.getId(),
-                savedUser.getEmail(),
                 savedUser.getName(),
+                savedUser.getEmail(),
                 savedUser.getCreatedAt(),
                 savedUser.getModifiedAt()
         );
