@@ -40,12 +40,18 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<GetUserResponse>> getAllUser () {
+    public ResponseEntity<List<GetUserResponse>> getAllUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
+        if (sessionUser == null) {
+            throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUser());
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<GetUserResponse> getOneUser (@PathVariable Long userId) {
+    public ResponseEntity<GetUserResponse> getOneUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long userId) {
+        if (sessionUser == null) {
+            throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(userService.findOneUser(userId));
     }
 
@@ -58,7 +64,10 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{userId}")
-    public ResponseEntity<Void> deleteUser (@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long userId) {
+        if (sessionUser == null) {
+            throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
+        }
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
