@@ -1,6 +1,7 @@
 package com.example.schedulemanagementdevelop.schedule.service;
 
 import com.example.schedulemanagementdevelop.comment.dto.GetCommentResponse;
+import com.example.schedulemanagementdevelop.schedule.dto.GetPageResponse;
 import com.example.schedulemanagementdevelop.comment.entity.Comment;
 import com.example.schedulemanagementdevelop.comment.repository.CommentRepository;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
@@ -9,6 +10,8 @@ import com.example.schedulemanagementdevelop.schedule.repository.ScheduleReposit
 import com.example.schedulemanagementdevelop.user.entity.User;
 import com.example.schedulemanagementdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -111,5 +114,10 @@ public class ScheduleService {
             throw new IllegalArgumentException("없는 일정 입니다.");
         }
         scheduleRepository.deleteById(scheduleId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetPageResponse> findAllSchedulePage(Pageable pageable) {
+        return scheduleRepository.findAllByOrderByModifiedAtDesc(pageable);
     }
 }
