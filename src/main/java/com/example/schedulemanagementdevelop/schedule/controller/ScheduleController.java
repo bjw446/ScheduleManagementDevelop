@@ -1,14 +1,17 @@
 package com.example.schedulemanagementdevelop.schedule.controller;
 
+import com.example.schedulemanagementdevelop.schedule.dto.GetPageResponse;
 import com.example.schedulemanagementdevelop.schedule.dto.*;
 import com.example.schedulemanagementdevelop.schedule.service.ScheduleService;
 import com.example.schedulemanagementdevelop.user.dto.SessionUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -30,6 +33,11 @@ public class ScheduleController {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findAllSchedule());
+    }
+
+    @GetMapping("/schedules/page")
+    public ResponseEntity<Page<GetPageResponse>> getAllSchedulePage (@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findAllSchedulePage(pageable));
     }
 
     @GetMapping("/schedules/{scheduleId}")
