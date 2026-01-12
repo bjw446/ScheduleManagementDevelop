@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logout") // SessionAttribute 로 로그인 여부 확인하기
     public ResponseEntity<Void> logout (@SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, HttpSession session) {
         if (sessionUser == null) {
             return ResponseEntity.badRequest().build();
@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/users")
+    @GetMapping("/users") // SessionAttribute 로 로그인 여부 확인하기
     public ResponseEntity<List<GetUserResponse>> getAllUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
@@ -47,7 +47,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUser());
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/{userId}") // SessionAttribute 로 로그인 여부 확인하기
     public ResponseEntity<GetUserResponse> getOneUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long userId) {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
@@ -55,7 +55,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findOneUser(userId));
     }
 
-    @PutMapping("/users")
+    @PutMapping("/users") // SessionAttribute 로 로그인 여부 확인하기
     public ResponseEntity<UpdateUserResponse> updateUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @RequestBody UpdateUserRequest request) {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");
@@ -63,7 +63,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(sessionUser.getId(), request));
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/users/{userId}") // SessionAttribute 로 로그인 여부 확인하기
     public ResponseEntity<Void> deleteUser (@Valid @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long userId) {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요한 서비스 입니다.");

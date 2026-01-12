@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler { // 에러 핸들링 용 config 클래스 구현
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity
@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
                 .body("요청 오류: " + e.getMessage());
     }
 
+    // Bean Validation용 메서드 구현
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         String errorMessage = exception.getBindingResult().getFieldErrors().stream()

@@ -14,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder; // 비밀번호 보안 엔코더 연결하기
 
-    @Transactional
+    @Transactional // 회원 가입
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) { // 중복 메일 체크
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
         }
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword()); // 암호화된 비밀번호 저장
         User user = new User(
                 request.getName(),
                 request.getEmail(),
@@ -43,6 +43,7 @@ public class UserService {
                 () -> new IllegalArgumentException("이메일이 일치하지 않습니다.")
         );
 
+        // 입력한 비밀번호를 암호화 값으로 변경하여 저장된 비밀번호와 비교
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }

@@ -69,6 +69,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("없는 일정 입니다.")
         );
+        // 스케줄ID를 기준으로 댓글 리스트 구현
         List<Comment> comments = commentRepository.findAllByScheduleId(scheduleId);
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : comments) {
@@ -114,6 +115,7 @@ public class ScheduleService {
             throw new IllegalArgumentException("없는 일정 입니다.");
         }
 
+        // 댓글이 등록된 일정 삭제시 등록된 댓글도 같이 삭제
         commentRepository.deleteAllByScheduleId(scheduleId);
         scheduleRepository.deleteById(scheduleId);
     }
