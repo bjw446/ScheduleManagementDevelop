@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
+@Getter // 스케줄 및 댓글 같이 조회하기 위한 dto
 public class GetScheduleAndCommentResponse {
     private final Long id;
     private final String scheduleTitle;
